@@ -1,0 +1,18 @@
+{
+  "name": "wod-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "boom": "6.0.0",
+    "cheerio": "1.0.0-rc.2",
+    "dotenv": "4.0.0",
+    "handlebars": "4.0.10",
+    "hapi": "16.6.2",
+    "inert": "4.2.1",
+    "request": "2.83.0",
+    "request-promise": "4.2.2",
+    "sqlite": "2.8.0",
+    "vision": "4.1.1"
+  }
+}
