@@ -54,7 +54,17 @@
                 keyMap:  'sublime',
                 theme: 'monokai',
                 tabSize: 4,
-                lineWrapping: true
+                lineWrapping: true,
+                extraKeys: {
+                    'Cmd-S': function() {
+                        var formElement = document.getElementById('form');
+                        formElement.submit();
+                    },
+                    'Cmd-Esc': function() {
+                        var deleteButton = document.getElementById('delete');
+                        deleteButton.click();
+                    }
+                }
             });
         }, false);
 
