@@ -54,10 +54,15 @@ async function stats() {
     const processedRow = results.find(row => row.processed == 1);
     const unprocessed = unprocessedRow ? unprocessedRow.count : 0;
     const processed = processedRow ? processedRow.count : 0;
+    const total = unprocessed + processed
     return {
         unprocessed,
         processed,
-        total: unprocessed + processed
+        total,
+        ratio: {
+            unprocessed: (unprocessed / total * 100).toFixed(2),
+            processed: (processed / total * 100).toFixed(2)
+        }
     };
 }
 
