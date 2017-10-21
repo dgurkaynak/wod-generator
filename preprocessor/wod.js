@@ -6,6 +6,11 @@ function get(id) {
 }
 
 
+function getAll() {
+    return db.all('SELECT * FROM wod;');
+}
+
+
 function create(data) {
     return db.run(
         `INSERT INTO
@@ -69,6 +74,7 @@ async function stats() {
 
 module.exports = {
     get,
+    getAll,
     create,
     update,
     remove,
