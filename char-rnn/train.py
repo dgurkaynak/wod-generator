@@ -2,6 +2,7 @@ import os, sys
 import numpy as np
 import tensorflow as tf
 import datetime
+import cPickle as pickle
 from model import CharRNNModel
 from loader import BatchTextLoader
 
@@ -12,7 +13,7 @@ tf.app.flags.DEFINE_integer('num_layers', 2, 'The number of layers in the RNN')
 tf.app.flags.DEFINE_string('model', 'lstm', 'RNN model: rnn, gru, lstm, or nas')
 tf.app.flags.DEFINE_integer('batch_size', 50, 'Batch size')
 tf.app.flags.DEFINE_integer('seq_length', 50, 'RNN sequence length')
-tf.app.flags.DEFINE_integer('num_epochs', 50, 'Number of epochs for training')
+tf.app.flags.DEFINE_integer('num_epochs', 5, 'Number of epochs for training')
 tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 tf.app.flags.DEFINE_float('grad_clip', 5.0, 'Clip gradients value')
 tf.app.flags.DEFINE_float('learning_rate', 0.002, 'Learning rate for adam optimizer')
@@ -26,6 +27,10 @@ FLAGS = tf.app.flags.FLAGS
 
 
 def main(_):
+    # Batch text loader
+    loader = BatchTextLoader(FLAGS.input_file)
+    FLAGS.__flags['vocab_size'] = loader.vocab_size
+
     # Create training directories
     now = datetime.datetime.now()
     train_dir_name = now.strftime('char_rnn_%Y%m%d_%H%M%S')
@@ -38,21 +43,22 @@ def main(_):
     if not os.path.isdir(checkpoint_dir): os.mkdir(checkpoint_dir)
     if not os.path.isdir(tensorboard_dir): os.mkdir(tensorboard_dir)
 
-    # Write flags to txt
-    flags_file_path = os.path.join(train_dir, 'flags.txt')
+    # Write options
+    flags_file_path = os.path.join(train_dir, 'flags.pkl')
     flags_file = open(flags_file_path, 'w')
-    for key, value in FLAGS.__flags.items():
-        flags_file.write('{}={}\n'.format(key, value))
+    pickle.dump(FLAGS.__flags, flags_file)
     flags_file.close()
+
+    # Write loader stuff
+    loader_data_file_path = os.path.join(train_dir, 'loader_data.pkl')
+    loader_data_file = open(loader_data_file_path, 'w')
+    pickle.dump(loader, loader_data_file)
+    loader_data_file.close()
 
     # Placeholders
     x = tf.placeholder(tf.int32, [FLAGS.batch_size, FLAGS.seq_length])
     y = tf.placeholder(tf.int32, [FLAGS.batch_size, FLAGS.seq_length])
     learning_rate = tf.Variable(0.0, trainable=False)
-
-    # Batch text loader
-    loader = BatchTextLoader(FLAGS.input_file)
-    FLAGS.__flags['vocab_size'] = loader.vocab_size
 
     # Model
     model = CharRNNModel(FLAGS)
