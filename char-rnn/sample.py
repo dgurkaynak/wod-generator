@@ -52,20 +52,26 @@ with tf.Session() as sess:
         prime = SEPERATOR_CHAR
         sampling_type=1
         state = sess.run(model.cell.zero_state(1, tf.float32))
-        for char in prime[:-1]:
-            input = np.zeros((1, 1))
-            input[0, 0] = loader_data.vocab[char]
-            feed = {x: input, model.initial_state: state}
-            [state] = sess.run([model.final_state], feed)
+
+        acc = ''
+        char = prime[-1]
+        wod_i = 0
+
+        def reset_model_state():
+            char = prime[-1]
+
+            for char in prime[:-1]:
+                input = np.zeros((1, 1))
+                input[0, 0] = loader_data.vocab[char]
+                feed = {x: input, model.initial_state: state}
+                [state] = sess.run([model.final_state], feed)
 
         def weighted_pick(weights):
             t = np.cumsum(weights)
             s = np.sum(weights)
             return(int(np.searchsorted(t, np.random.rand(1)*s)))
 
-        acc = ''
-        char = prime[-1]
-        wod_i = 0
+        reset_model_state()
 
         while (True):
             input = np.zeros((1, 1))
@@ -87,8 +93,10 @@ with tf.Session() as sess:
             pred = loader_data.chars[sample]
 
             if pred == SEPERATOR_CHAR:
+                reset_model_state()
+
                 acc = acc.strip()
-                if acc == "": continue
+                if acc == '': continue
 
                 wod_i += 1
 
