@@ -21,6 +21,7 @@ class dot_dict(dict):
 
 # Connect to db
 connection = sqlite3.connect('../db.sqlite')
+connection.text_factory = str
 c = connection.cursor()
 
 # Read options
