@@ -4,11 +4,13 @@ import tensorflow as tf
 import cPickle as pickle
 from model import CharRNNModel
 from loader import BatchTextLoader
+import sqlite3
 
 
 DATA_DIR = '../training/char_rnn_20171022_112745'
 SEPERATOR_CHAR = '|'
 NUM_WOD_SAMPLE = 1
+SAVE_TO_DB = False
 
 
 # Helper class to access dict members with dot notation
@@ -16,6 +18,10 @@ class dot_dict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
+
+# Connect to db
+connection = sqlite3.connect('../db.sqlite')
+c = connection.cursor()
 
 # Read options
 flags_file_path = os.path.join(DATA_DIR, 'flags.pkl')
@@ -57,7 +63,7 @@ with tf.Session() as sess:
             s = np.sum(weights)
             return(int(np.searchsorted(t, np.random.rand(1)*s)))
 
-        ret = ''
+        acc = ''
         char = prime[-1]
         wod_i = 0
 
@@ -81,10 +87,19 @@ with tf.Session() as sess:
             pred = loader_data.chars[sample]
 
             if pred == SEPERATOR_CHAR:
+                acc = acc.strip()
+                if acc == "": continue
+
                 wod_i += 1
-                if wod_i == (NUM_WOD_SAMPLE + 1): break
+
+                print("\n{}\n".format(acc))
+                if SAVE_TO_DB: c.execute('INSERT INTO sample (content) VALUES (?)', (acc,))
+                acc = ''
+
+                if wod_i == NUM_WOD_SAMPLE: break
             else:
-                ret += pred
+                acc += pred
                 char = pred
 
-        print(ret)
+        connection.commit()
+        connection.close()
