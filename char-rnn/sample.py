@@ -102,7 +102,7 @@ with tf.Session() as sess:
                 wod_i += 1
 
                 print("\n{}\n".format(acc))
-                if SAVE_TO_DB: c.execute('INSERT INTO sample (content) VALUES (?)', (acc,))
+                if SAVE_TO_DB: c.execute('INSERT INTO sample (content, processed) VALUES (?, 0)', (acc,))
                 acc = ''
 
                 if wod_i == NUM_WOD_SAMPLE: break
