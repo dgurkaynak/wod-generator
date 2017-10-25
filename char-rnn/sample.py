@@ -29,6 +29,7 @@ def main(_):
     # If data_dir is empty, find the folder
     if not FLAGS.data_dir:
         dirs = [d for d in os.listdir('../training') if os.path.isdir(os.path.join('../training', d))]
+        dirs = sorted(dirs)
         FLAGS.data_dir = '../training/{}'.format(dirs[-1])
 
     # Read options
