@@ -1,8 +1,8 @@
 require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
-const { init: initDatabase } = require('../preprocessor/db');
-const wod = require('../preprocessor/wod');
+const { init: initDatabase } = require('../editor/db');
+const wod = require('../editor/wod');
 
 
 const OUTPUT_FILE = path.join(__dirname, '../data/wods.txt');
