@@ -16,7 +16,7 @@ async function main() {
     fs.writeFile(OUTPUT_FILE, wodsText, (err) => {
         if (err) {
             console.error(err);
-            process.exit(1);
+            process.exitCode = 1;
         }
 
         console.log(`Written to ${OUTPUT_FILE}`);
@@ -26,5 +26,5 @@ async function main() {
 
 main().catch((err) => {
     console.error(err);
-    process.exit(1);
+    process.exitCode = 1;
 });
